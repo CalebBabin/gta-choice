@@ -1,0 +1,23 @@
+{
+  "name": "flyingobjects",
+  "version": "1.0.0",
+  "description": "",
+  "prviate": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npm run start",
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "parcel-bundler": "^1.12.4",
+    "stats-js": "^1.0.1",
+    "tmi.js": "^1.7.1",
+    "twitch-chat-emotes": "^0.1.32"
+  },
+  "devDependencies": {
+    "sass": "^1.32.8"
+  }
+}
