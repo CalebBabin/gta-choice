@@ -24,37 +24,40 @@ const pendingEmoteArray = [];
 ChatInstance.on("emotes", (e) => 
 {
 	//get 1/10th of the emotes then pick the oldest from that selection
-	var fiveRandomPositions = getRandomFromArray(emotePositions, 8); //i named this "five random" but then changed it to 8 :)
-	
-	var selectedPos = 0;
-	var oldestPos = fiveRandomPositions[0].created;
-	for (let index = 1; index < fiveRandomPositions.length; index++) {
-		if(fiveRandomPositions[index].created < oldestPos || fiveRandomPositions[index].emote == null)
-		{
-			selectedPos = index;
+	for (let emoteIndex = 0; emoteIndex < e.emotes.length; emoteIndex++) 
+	{
+		var fiveRandomPositions = getRandomFromArray(emotePositions, 8); //i named this "five random" but then changed it to 8 :)
+		
+		var selectedPos = 0;
+		var oldestPos = fiveRandomPositions[0].created;
+		for (let index = 1; index < fiveRandomPositions.length; index++) {
+			if(fiveRandomPositions[index].created < oldestPos || fiveRandomPositions[index].emote == null)
+			{
+				selectedPos = index;
+			}
 		}
-	}
 
-	emotePositions[fiveRandomPositions[selectedPos].id].created = Date.now();
-	emotePositions[fiveRandomPositions[selectedPos].id].emote = e.emotes[0];
-	
-	if(shadowlordEmotes.includes(e.emotes[0].name))
-	{
-		armGradual += 1;
-	}
-	else if(lennyEmotes.includes(e.emotes[0].name))
-	{	
-		armGradual -= 1;
-	}
-	else if(dabEmotes.includes(e.emotes[0].name))
-	{
-		dabGradual += 1.25;
+		emotePositions[fiveRandomPositions[selectedPos].id].created = Date.now();
+		emotePositions[fiveRandomPositions[selectedPos].id].emote = e.emotes[emoteIndex];
+		
+		if(shadowlordEmotes.includes(e.emotes[emoteIndex].name))
+		{
+			armGradual += 1;
+		}
+		else if(lennyEmotes.includes(e.emotes[emoteIndex].name))
+		{	
+			armGradual -= 1;
+		}
+		else if(dabEmotes.includes(e.emotes[emoteIndex].name))
+		{
+			dabGradual += 1.25;
+		}
 	}
 	
 })
 
 const shadowlordEmotes = ["moon2SL", "VANiSH"];
-const lennyEmotes = ["moon2LENNY", "CLICK", "LLenny", "Kissabrother", "KKenny", "SexyOfficer"];
+const lennyEmotes = ["moon2LENNY", "CLICK", "LLenny", "Kissabrother", "KKenny", "SexyOfficer", "POOLICE"];
 const dabEmotes = ["moon2Y", "moon2GN"];
 
 const canvas = document.createElement('canvas');
@@ -250,7 +253,7 @@ window.addEventListener('DOMContentLoaded', () => {
 		
 		if(armGradual > 0.01)
 		{
-			if(armAngle < 15)
+			if(armAngle < 15.5)
 			{
 				armAngle += 0.05
 			}
@@ -258,7 +261,7 @@ window.addEventListener('DOMContentLoaded', () => {
 		}
 		else if(armGradual < -0.01)
 		{
-			if(armAngle > -15)
+			if(armAngle > -15.5)
 			{
 				armAngle -= 0.05
 			}
@@ -266,7 +269,7 @@ window.addEventListener('DOMContentLoaded', () => {
 		}
 		else
 		{
-			armAngle = armAngle * 0.9975
+			armAngle = armAngle * 0.9991
 		}
 	}
 
