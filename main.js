@@ -13,6 +13,7 @@ const ChatInstance = new Chat({
 	channels,
 	duplicateEmoteLimit: 1,
 	duplicateEmoteLimit_pleb: 0,
+	maximumEmoteLimit: 3,
 	maximumEmoteLimit_pleb: 1,
 })
 
@@ -23,22 +24,22 @@ const emoteTextures = {};
 const pendingEmoteArray = [];
 ChatInstance.on("emotes", (e) => 
 {
-	//get 1/10th of the emotes then pick the oldest from that selection
+	//get 1/3rd of the emotes then pick the oldest from that selection - originally was a smaller selection but was meh
 	for (let emoteIndex = 0; emoteIndex < e.emotes.length; emoteIndex++) 
 	{
-		var fiveRandomPositions = getRandomFromArray(emotePositions, 8); //i named this "five random" but then changed it to 8 :)
+		var someRandomPositions = getRandomFromArray(emotePositions, Math.floor(emotePositions.length/3));
 		
 		var selectedPos = 0;
-		var oldestPos = fiveRandomPositions[0].created;
-		for (let index = 1; index < fiveRandomPositions.length; index++) {
-			if(fiveRandomPositions[index].created < oldestPos || fiveRandomPositions[index].emote == null)
+		var oldestPos = someRandomPositions[0].created;
+		for (let index = 1; index < someRandomPositions.length; index++) {
+			if(someRandomPositions[index].created < oldestPos || someRandomPositions[index].emote == null)
 			{
 				selectedPos = index;
 			}
 		}
 
-		emotePositions[fiveRandomPositions[selectedPos].id].created = Date.now();
-		emotePositions[fiveRandomPositions[selectedPos].id].emote = e.emotes[emoteIndex];
+		emotePositions[someRandomPositions[selectedPos].id].created = Date.now();
+		emotePositions[someRandomPositions[selectedPos].id].emote = e.emotes[emoteIndex];
 		
 		if(shadowlordEmotes.includes(e.emotes[emoteIndex].name))
 		{
@@ -48,17 +49,30 @@ ChatInstance.on("emotes", (e) =>
 		{	
 			armGradual -= 1;
 		}
+		else if(actualShadowlordEmotes.includes(e.emotes[emoteIndex].name))
+		{	
+			shadowTogo += 1;
+			counte++;
+		}
 		else if(dabEmotes.includes(e.emotes[emoteIndex].name))
 		{
-			dabGradual += 1.25;
+			if(dabGradual < 0.5)
+			{
+				dabGradual += 3;
+			}
+			else
+			{
+				dabGradual += 1.25;
+			}
 		}
 	}
 	
 })
 
-const shadowlordEmotes = ["moon2SL", "VANiSH"];
-const lennyEmotes = ["moon2LENNY", "CLICK", "LLenny", "Kissabrother", "KKenny", "SexyOfficer", "POOLICE"];
-const dabEmotes = ["moon2Y", "moon2GN"];
+const actualShadowlordEmotes = ["moon2SL", "VANiSH"];
+const shadowlordEmotes = ["HYPERROBDAB", "robDab", "takeTheRob", "robPls", "pentawEeBey", "pentawCold", "pentawBlockwork", "pentawMikeWeird", "pentawMikeF", "pentawBlock"];
+const lennyEmotes = ["moon2LENNY", "CLICK", "LLenny", "Kissabrother", "KKenny", "SexyOfficer", "POOLICE", "born2RUN", "CODE1", "IMVCB", "lennyWalk", "lennyBASS", "MAHALO", "WeeWoo", "moon2HUH", "baldYAPPP"];
+const dabEmotes = ["moon2Y", "moon2GN", "REFRACTING"];
 
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
@@ -114,6 +128,8 @@ function populateBoxLocations()
 
 let armAngle = 0;
 let armGradual = 0;
+let angleAdjust = 0;
+let doIdle = false;
 
 let dabShake = 999999;
 let dabGradual = 0;
@@ -122,11 +138,15 @@ let direction = 0;
 let directFlip = false;
 let iters = 400;
 
+let armdirection = 0;
+let armdirectFlip = false;
+let armiters = 250;
+
 let boxCols = 8;
 let boxRows = 10;
 
 let boxTopLeftX = 100;
-let boxTopLeftY = 100;
+let boxTopLeftY = 50;
 let boxOffsetX = 5;
 let boxOffsetY = 115;
 let gameBoxWidth = 366*1.25;
@@ -149,25 +169,33 @@ let dabDiskHeight = 1200 * 0.50;
 let dabDiskPosX = -100;
 let dabDiskPosY = 700;
 
+let shadowSneakDiskWidth = 1200 * 0.50;
+let shadowSneakDiskHeight = 1200 * 0.50;
+let shadowSneakDiskPosX = 1325;
+let shadowSneakDiskPosY = 1080;
+
+let shadowAdjust = 0;
+let shadowTogo = 0;
+
 let fullWidth = window.innerWidth;
 let fullHeight = window.innerHeight;
 
 let halfx = window.innerWidth / 2;
 let halfy = window.innerHeight / 2;
 
-const backgroundSrc = require('./images/disks.png');
+const backgroundSrc = require('./images/backgroundNew.png');
 const background = new Image(window.innerWidth, window.innerHeight);
 background.src = backgroundSrc;
 
-const lennyDiskSrc = require('./images/lenny.png');
+const lennyDiskSrc = require('./images/lenny2.png');
 const lennyDisk = new Image(diskWidth, diskHeight);
 lennyDisk.src = lennyDiskSrc;
 
-const shadowDiskSrc = require('./images/shadowlord.png');
+const shadowDiskSrc = require('./images/ro.png'); //yeah im lazy, deal with it
 const shadowDisk = new Image(diskWidth, diskHeight);
 shadowDisk.src = shadowDiskSrc;
 
-const handSrc = require('./images/moonhand.png');
+const handSrc = require('./images/moonhandNew.png');
 const hand = new Image(handWidth, handHeight);
 hand.src = handSrc;
 
@@ -175,9 +203,17 @@ const dabDiskSrc = require('./images/dabbroke.png');
 const dabDisk = new Image(dabDiskWidth, dabDiskHeight);
 dabDisk.src = dabDiskSrc;
 
+const shadowSneakDiskSrc = require('./images/shadowlord.png');
+const shadowSneak = new Image(shadowSneakDiskWidth, shadowSneakDiskHeight);
+shadowSneak.src = shadowSneakDiskSrc;
+
 const gameboxSrc = require('./images/gamebox.png');
 const gamebox = new Image(gameBoxWidth, gameBoxHeight);
 gamebox.src = gameboxSrc;
+
+const gameboxOutlineSrc = require('./images/gameBoxOutline.png');
+const gameboxOutline = new Image(gameBoxWidth, gameBoxHeight);
+gameboxOutline.src = gameboxOutlineSrc;
 
 const gameboxBackSrc = require('./images/gameboxBack.png');
 const gameboxBack = new Image(gameBoxWidth, gameBoxHeight);
@@ -217,7 +253,7 @@ window.addEventListener('DOMContentLoaded', () => {
 		}
 		else if(dabShake < 999999)
 		{
-			dabShake *= 9;
+			dabShake *= 19;
 		}
 		
 		dabDiskPosX = easeInOutSine(direction, 0, 10, dabShake);
@@ -241,9 +277,32 @@ window.addEventListener('DOMContentLoaded', () => {
 		}
 
 		ctx.drawImage(gamebox, boxTopLeftX, boxTopLeftY, gameBoxWidth, gameBoxHeight);
+		ctx.drawImage(gameboxOutline, boxTopLeftX, boxTopLeftY, gameBoxWidth, gameBoxHeight);
 		
 		ctx.drawImage(shadowDisk, shadowDiskPosX, shadowDiskPosY, diskWidth, diskHeight);
 		ctx.drawImage(lennyDisk, lennyDiskPosX, lennyDiskPosY, diskWidth, diskHeight);
+		
+		if(shadowTogo > 0)
+		{
+			if(shadowAdjust < 700)
+			{
+				shadowAdjust += 1;
+			}
+			shadowTogo -= 0.04;
+		}
+		else if(shadowAdjust > 1.01)
+		{
+			shadowAdjust *= 0.9991
+		}
+		
+		ctx.drawImage(shadowSneak, shadowSneakDiskPosX, shadowSneakDiskPosY - shadowAdjust, shadowSneakDiskWidth, shadowSneakDiskHeight);
+		
+		if(doIdle)
+		{
+			if (armdirectFlip) armdirection++;
+			else armdirection--;
+			if (Math.abs(armdirection) >= armiters) armdirectFlip = !armdirectFlip;
+		}
 		
 		ctx.save()
 		ctx.translate( handPosX + handWidth/4, handPosY + handHeight*1.5); //this is incredibly janky because im dumb
@@ -251,25 +310,55 @@ window.addEventListener('DOMContentLoaded', () => {
 		ctx.drawImage(hand, -150, -handPosY*2.40, handWidth, handHeight);
 		ctx.restore();
 		
+		let armChanged = false;
+		
 		if(armGradual > 0.01)
 		{
-			if(armAngle < 15.5)
+			if(armAngle < 15.5 && Math.abs(armGradual) > 1)
 			{
-				armAngle += 0.05
+				doIdle = false;
+				armAngle += 0.08
+				armChanged = true
 			}
-			armGradual -= 0.05
+			armGradual -= 0.04
 		}
 		else if(armGradual < -0.01)
 		{
-			if(armAngle > -15.5)
+			if(armAngle > -15.5 && Math.abs(armGradual) > 1)
 			{
-				armAngle -= 0.05
+				doIdle = false;
+				armAngle -= 0.08
+				armChanged = true
 			}
-			armGradual += 0.05
+			armGradual += 0.04
 		}
-		else
+		
+		if(doIdle)
 		{
-			armAngle = armAngle * 0.9991
+			armAngle = easeInOutSine(armdirection, 0, 1.95, 250);
+		}
+		else if(armAngle < 0.05 && armAngle > -0.05 && !doIdle)
+		{
+			angleAdjust = armAngle;
+			doIdle = true;
+			armdirection = 0;
+			armdirectFlip = false;
+			armiters = 250;
+		}
+		else if(!armChanged)
+		{
+			if(Math.abs(armAngle) < 1)
+			{
+				armAngle = armAngle * 0.99
+			}
+			else if(Math.abs(armAngle) < 4)
+			{
+				armAngle = armAngle * 0.998
+			}
+			else
+			{
+				armAngle = armAngle * 0.9991
+			}
 		}
 	}
 
