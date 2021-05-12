@@ -130,6 +130,7 @@ let armAngle = 0;
 let armGradual = 0;
 let angleAdjust = 0;
 let doIdle = false;
+let moveDelay = 0;
 
 let dabShake = 999999;
 let dabGradual = 0;
@@ -304,12 +305,6 @@ window.addEventListener('DOMContentLoaded', () => {
 			if (Math.abs(armdirection) >= armiters) armdirectFlip = !armdirectFlip;
 		}
 		
-		ctx.save()
-		ctx.translate( handPosX + handWidth/4, handPosY + handHeight*1.5); //this is incredibly janky because im dumb
-		ctx.rotate(armAngle * Math.PI / 180)
-		ctx.drawImage(hand, -150, -handPosY*2.40, handWidth, handHeight);
-		ctx.restore();
-		
 		let armChanged = false;
 		
 		if(armGradual > 0.01)
@@ -318,9 +313,10 @@ window.addEventListener('DOMContentLoaded', () => {
 			{
 				doIdle = false;
 				armAngle += 0.08
-				armChanged = true
 			}
 			armGradual -= 0.04
+			moveDelay = 1
+			armChanged = true
 		}
 		else if(armGradual < -0.01)
 		{
@@ -328,16 +324,22 @@ window.addEventListener('DOMContentLoaded', () => {
 			{
 				doIdle = false;
 				armAngle -= 0.08
-				armChanged = true
 			}
 			armGradual += 0.04
+			moveDelay = 1
+			armChanged = true
+		}
+		else if(moveDelay > 0)
+		{
+			armChanged = true
+			moveDelay -= 0.05
 		}
 		
 		if(doIdle)
 		{
 			armAngle = easeInOutSine(armdirection, 0, 1.95, 250);
 		}
-		else if(armAngle < 0.05 && armAngle > -0.05 && !doIdle)
+		else if(armAngle < 0.025 && armAngle > -0.025 && !doIdle)
 		{
 			angleAdjust = armAngle;
 			doIdle = true;
@@ -347,7 +349,11 @@ window.addEventListener('DOMContentLoaded', () => {
 		}
 		else if(!armChanged)
 		{
-			if(Math.abs(armAngle) < 1)
+			if(Math.abs(armAngle) < 0.2)
+			{
+				armAngle = armAngle * 0.97
+			}
+			else if(Math.abs(armAngle) < 1)
 			{
 				armAngle = armAngle * 0.99
 			}
@@ -360,6 +366,12 @@ window.addEventListener('DOMContentLoaded', () => {
 				armAngle = armAngle * 0.9991
 			}
 		}
+		
+		ctx.save()
+		ctx.translate( handPosX + handWidth/4, handPosY + handHeight*1.5); //this is incredibly janky because im dumb
+		ctx.rotate(armAngle * Math.PI / 180)
+		ctx.drawImage(hand, -150, -handPosY*2.40, handWidth, handHeight);
+		ctx.restore();
 	}
 
 	resize();
