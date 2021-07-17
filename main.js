@@ -71,7 +71,7 @@ ChatInstance.on("emotes", (e) =>
 
 const actualshadowlordemotes = ["moon2sl", "vanish"];
 const shadowlordemotes = ["hyperrobdab", "robdab", "taketherob", "robpls", "pentaweebey", "pentawcold", "pentawblockwork", "pentawmikeweird", "pentawmikef", "pentawblock"];
-const lennyEmotes = ["moon2lenny", "click", "llenny", "kissabrother", "kkenny", "sexyofficer", "poolice", "born2run", "code1", "imvcb", "lennywalk", "lennybass", "baldyappp", "moon2huh", "mahalo", "weewoo"];
+const lennyEmotes = ["moon2lenny", "click", "llenny", "kissabrother", "kkenny", "sexyofficer", "poolice", "born2run", "code1", "imvcb", "lennywalk", "lennybass", "baldyappp", "moon2huh", "mahalo", "weewoo", "kkona"];
 const dabemotes = ["moon2y", "moon2gn", "refracting"];
 
 const canvas = document.createElement('canvas');
