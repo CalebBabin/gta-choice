@@ -41,20 +41,20 @@ ChatInstance.on("emotes", (e) =>
 		emotePositions[someRandomPositions[selectedPos].id].created = Date.now();
 		emotePositions[someRandomPositions[selectedPos].id].emote = e.emotes[emoteIndex];
 		
-		if(shadowlordEmotes.includes(e.emotes[emoteIndex].name))
+		if(shadowlordEmotes.includes(e.emotes[emoteIndex].name.toLowerCase()))
 		{
 			armGradual += 1;
 		}
-		else if(lennyEmotes.includes(e.emotes[emoteIndex].name))
+		else if(lennyEmotes.includes(e.emotes[emoteIndex].name.toLowerCase()))
 		{	
 			armGradual -= 1;
 		}
-		else if(actualShadowlordEmotes.includes(e.emotes[emoteIndex].name))
+		else if(actualShadowlordEmotes.includes(e.emotes[emoteIndex].name.toLowerCase()))
 		{	
-			shadowTogo += 1;
+			shadowTogo += 0.5;
 			counte++;
 		}
-		else if(dabEmotes.includes(e.emotes[emoteIndex].name))
+		else if(dabEmotes.includes(e.emotes[emoteIndex].name.toLowerCase()))
 		{
 			if(dabGradual < 0.5)
 			{
@@ -69,10 +69,10 @@ ChatInstance.on("emotes", (e) =>
 	
 })
 
-const actualShadowlordEmotes = ["moon2SL", "VANiSH"];
-const shadowlordEmotes = ["HYPERROBDAB", "robDab", "takeTheRob", "robPls", "pentawEeBey", "pentawCold", "pentawBlockwork", "pentawMikeWeird", "pentawMikeF", "pentawBlock"];
-const lennyEmotes = ["moon2LENNY", "CLICK", "LLenny", "Kissabrother", "KKenny", "SexyOfficer", "POOLICE", "born2RUN", "CODE1", "IMVCB", "lennyWalk", "lennyBASS", "MAHALO", "WeeWoo", "moon2HUH", "baldYAPPP"];
-const dabEmotes = ["moon2Y", "moon2GN", "REFRACTING"];
+const actualshadowlordemotes = ["moon2sl", "vanish"];
+const shadowlordemotes = ["hyperrobdab", "robdab", "taketherob", "robpls", "pentaweebey", "pentawcold", "pentawblockwork", "pentawmikeweird", "pentawmikef", "pentawblock"];
+const lennyEmotes = ["moon2lenny", "click", "llenny", "kissabrother", "kkenny", "sexyofficer", "poolice", "born2run", "code1", "imvcb", "lennywalk", "lennybass", "baldyappp", "moon2huh", "mahalo", "weewoo"];
+const dabemotes = ["moon2y", "moon2gn", "refracting"];
 
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
@@ -188,7 +188,7 @@ const backgroundSrc = require('./images/backgroundNew.png');
 const background = new Image(window.innerWidth, window.innerHeight);
 background.src = backgroundSrc;
 
-const lennyDiskSrc = require('./images/lenny2.png');
+const lennyDiskSrc = require('./images/lenny.png');
 const lennyDisk = new Image(diskWidth, diskHeight);
 lennyDisk.src = lennyDiskSrc;
 
@@ -285,7 +285,7 @@ window.addEventListener('DOMContentLoaded', () => {
 		
 		if(shadowTogo > 0)
 		{
-			if(shadowAdjust < 700)
+			if(shadowAdjust < 400)
 			{
 				shadowAdjust += 1;
 			}
